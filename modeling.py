@@ -52,7 +52,7 @@ def feature_selection(model, num_features, X_train, y_train, X_test):
 
     return X_train, X_test, features_selected
 
-def evaluate_model(ppl, X_train, y_train, X_test, y_test, kf):
+def evaluate_model(ppl, X_train, y_train, X_test, y_test, kf=5, name=''):
     """评估模型在训练集和测试集上的性能"""
 
     val_acc = cross_val_score(ppl, X_train, y_train, cv=kf)
@@ -61,16 +61,17 @@ def evaluate_model(ppl, X_train, y_train, X_test, y_test, kf):
     reports = classification_report(y_test, y_pred)
     mc = matthews_corrcoef(y_test, y_pred)
     cm = confusion_matrix(y_test, y_pred)
-    names = ['Non-DNS','DNS']
-    conf_matrix = pd.DataFrame(cm, index=names, columns=names)
+    classes = ['Non-DNS','DNS']
+    conf_matrix = pd.DataFrame(cm, index=classes, columns=classes)
 
-    print(f'Model\'s results of 10-fold cross-validation are as follows: \n {val_acc} \n')
-    print(f'Model\'s mean accuracy of 10-fold cross-validation is {val_acc.mean():.3g}')
-    print(f'Model\'s Matthews Correlation Coefficient is {mc:.3g} \n')
-    print(f'Model\'s performance on test set is as follows:\n{reports}')
+    print(f'{name}\'s results of 10-fold cross-validation are as follows: \n {val_acc} \n')
+    print(f'{name}\'s mean accuracy of 10-fold cross-validation is {val_acc.mean():.3g}')
+    print(f'{name}\'s Matthews Correlation Coefficient is {mc:.3g} \n')
+    print(f'{name}\'s performance on test set is as follows:\n{reports}')
 
     plt.figure()
     sns.heatmap(conf_matrix, annot=True, annot_kws={"size":10}, cmap="Blues")
+    plt.title(f'{name}', fontsize=15)
     plt.ylabel('True Class', fontsize=12)
     plt.xlabel('Predicted Class', fontsize=12)
     plt.show()
